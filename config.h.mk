@@ -1,12 +1,22 @@
 
+eq = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
+
+define def
+$(if $(call eq,$2,yes),\
+  #define $1 &echo.>>config.h,\
+  $(if $(call eq,$2,no),,\
+    #define $1 $2 &echo.>>config.h))
+endef
+
+
 config.h: config.mk
 	@echo "Generating config.h for $(MCU)"
-	@echo "// XBoot config header file" > config.h
-	@echo "// MCU: $(MCU)" >> config.h
-	@echo "// F_CPU: $(F_CPU)" >> config.h
-	@echo >> config.h
-	@$(foreach v, \
-	$(sort $(filter-out USE_CONFIG_H, $(filter \
+	@echo // XBoot config header file > config.h
+	@echo // MCU: $(MCU) >> config.h
+	@echo // F_CPU: $(F_CPU) >> config.h
+
+	@echo $(foreach v, \
+	$(sort $(filter-out USE_CONFIG_H,$(filter \
 				ATTACH_% \
 				ENABLE_% \
 				ENTER_% \
@@ -16,7 +26,4 @@ config.h: config.mk
 				UART_% \
 				USE_% \
 				WATCHDOG_%, $(.VARIABLES)))), \
-	if [[ "$($(v))" == "y" || "$($(v))" == "yes" ]] ; then \
-	echo "#define $(v)" >> config.h ; \
-	elif [[ -n "$($(v))" && "$($(v))" != "n" && "$($(v))" != "no" ]] ; then \
-	echo "#define $(v) $($(v))" >> config.h ; fi ;)
+	$(call def,$(v),$($(v))))

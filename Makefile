@@ -108,7 +108,7 @@
 ## MCU = atmega1284p
 ## MCU = atmega2560
 ## MCU = atmega2561
-MCU = atxmega64a3
+MCU = atxmega128a3
 
 # Is this a bootloader?
 #MAKE_BOOTLOADER=no
@@ -138,8 +138,8 @@ BOOTSZ=0
 PROG_BOOT_ONLY=yes
 
 # CPU Frequency
-F_CPU=2000000
-#F_CPU=32000000
+#F_CPU=2000000
+F_CPU=32000000
 #F_CPU=16000000
 
 # Configuration support
@@ -759,7 +759,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS) $(DEFINES)
 
 
 # Default target.
-all: begin gccversion sizebefore build sizeafter finished end
+all: begin gccversion build finished end
 
 build: elf hex eep lss sym
 
@@ -940,7 +940,7 @@ clean_list :
 
 
 # Listing of phony targets.
-.PHONY : all begin finish end sizebefore sizeafter gccversion \
+.PHONY : all begin finish end gccversion \
 build elf hex eep lss sym coff extcoff \
 clean clean_list program force
 
