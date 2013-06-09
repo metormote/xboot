@@ -896,6 +896,11 @@ autoneg_done:
         // Update firmware if needed
         install_firmware();
         #endif // ENABLE_API_FIRMWARE_UPDATE
+        #ifdef ENABLE_ANT_FIRMWARE_UPDATE
+        // Update firmware if needed
+        ant_load_firmware();
+        #endif // ENABLE_ANT_FIRMWARE_UPDATE
+        
         #endif // ENABLE_API
         
         #ifdef USE_FIFO

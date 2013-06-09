@@ -54,6 +54,10 @@
 #include "config.h"
 #endif // USE_CONFIG_H
 
+#ifdef ENABLE_ANT_FIRMWARE_UPDATE
+#include "ant.h"
+#endif // ENABLE_ANT_FIRMWARE_UPDATE
+
 // Configuration
 
 // clock config
@@ -149,10 +153,10 @@
 //#define WATCHDOG_TIMEOUT        WDT_PER_128CLK_gc
 //#define WATCHDOG_TIMEOUT        WDT_PER_256CLK_gc
 //#define WATCHDOG_TIMEOUT        WDT_PER_512CLK_gc
-#define WATCHDOG_TIMEOUT        WDT_PER_1KCLK_gc
+//#define WATCHDOG_TIMEOUT        WDT_PER_1KCLK_gc
 //#define WATCHDOG_TIMEOUT        WDT_PER_2KCLK_gc
 //#define WATCHDOG_TIMEOUT        WDT_PER_4KCLK_gc
-//#define WATCHDOG_TIMEOUT        WDT_PER_8KCLK_gc
+#define WATCHDOG_TIMEOUT        WDT_PER_8KCLK_gc
 
 // LED
 #define LED_PORT_NAME           A
