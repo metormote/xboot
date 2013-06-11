@@ -246,7 +246,7 @@ static void ant_receive(uint8_t *cmd, uint8_t* data, uint8_t *size)
 {
   uint8_t cmd, len, last;
   uint8_t data[16], buffer[SPM_PAGESIZE], fw_command[6];
-  uint8_t *ptr, *seg;
+  uint8_t *ptr, *seg, c, counter;
   uint16_t l, crc, crc2;
   uint32_t adr;
   
@@ -266,8 +266,10 @@ static void ant_receive(uint8_t *cmd, uint8_t* data, uint8_t *size)
       adr = APP_SECTION_START;
       seg = buffer;
       ptr = seg;
+      counter=0xFF;
       last=0;
-    
+      c=0, l=0;
+      
       ant_init(crc);
     
       while(!last) {
@@ -276,12 +278,13 @@ static void ant_receive(uint8_t *cmd, uint8_t* data, uint8_t *size)
           switch(cmd) {
             case 0x50:
               //check if its the first frame in the burst
-              if((data[0] & 0xE0)==0) {
+              if((data[0] & 0xe0)==0) {
                 ptr=seg;
                 //check if its the last segment
                 if(data[1] & 0x80) {
                   last=1;
                 }
+                c=data[1] & 0x7f;
                 l=(data[3] << 8) | data[2];
               }
               else {
@@ -293,9 +296,23 @@ static void ant_receive(uint8_t *cmd, uint8_t* data, uint8_t *size)
           
               //check if its the last frame in the burst
               if(data[0] & 0x80) {
-                //set extra data to 0xff
-                for(int i=0;i<(l % 8);i++) {
-                  *(--ptr)=0xff;
+                //skip this burst if it repeated
+                if(counter==c) {
+                  last=0;
+                  seg=buffer;
+                  continue;
+                }
+                //check if we have missed one or more bursts
+                if(((counter+1) & 0x7f)!=c) {
+                  goto rx_done;
+                }
+                counter=c;
+                
+                //remove extra data
+                if(l % 8) {
+                  for(int i=(8-(l % 8));i!=0;i--) {
+                    *(--ptr)=0xff;
+                  }
                 }
                 seg=ptr;
                 goto burst_done;
